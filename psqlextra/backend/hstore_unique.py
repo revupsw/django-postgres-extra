@@ -1,7 +1,7 @@
 from ..fields import HStoreField
 
 
-class HStoreUniqueSchemaEditorMixin:
+class HStoreUniqueSchemaEditorMixin(object):
     sql_hstore_unique_create = (
         'CREATE UNIQUE INDEX IF NOT EXISTS '
         '{name} ON {table} '
@@ -155,7 +155,7 @@ class HStoreUniqueSchemaEditorMixin:
         self.execute(sql)
 
     @staticmethod
-    def _unique_constraint_name(table: str, field, keys):
+    def _unique_constraint_name(table, field, keys):
         """Gets the name for a UNIQUE INDEX that applies
         to one or more keys in a hstore field.
 

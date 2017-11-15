@@ -1,7 +1,7 @@
 from ..fields import HStoreField
 
 
-class HStoreRequiredSchemaEditorMixin:
+class HStoreRequiredSchemaEditorMixin(object):
     sql_hstore_required_create = (
         'ALTER TABLE {table} '
         'ADD CONSTRAINT {name} '
@@ -161,7 +161,7 @@ class HStoreRequiredSchemaEditorMixin:
         self.execute(sql)
 
     @staticmethod
-    def _required_constraint_name(table: str, field, key):
+    def _required_constraint_name(table, field, key):
         """Gets the name for a CONSTRAINT that applies
         to a single hstore key.
 

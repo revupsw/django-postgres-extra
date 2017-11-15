@@ -1,3 +1,4 @@
+from __future__ import with_statement
 from typing import Dict, List, Union, Tuple
 
 import django
@@ -20,7 +21,7 @@ class PostgresQuerySet(models.QuerySet):
     def __init__(self, model=None, query=None, using=None, hints=None):
         """Initializes a new instance of :see:PostgresQuerySet."""
 
-        super().__init__(model, query, using, hints)
+        super(self.__class__, self).__init__(model, query, using, hints)
 
         self.query = query or PostgresQuery(self.model)
 
@@ -38,10 +39,9 @@ class PostgresQuerySet(models.QuerySet):
         allow that.
         """
 
-        fields = {
-            field.name: field
-            for field in self.model._meta.get_fields()
-        }
+        fields = dict((
+            field.name, field)
+            for field in self.model._meta.get_fields())
 
         # temporarily rename the fields that have the same
         # name as a field name, we'll rename them back after
@@ -57,7 +57,7 @@ class PostgresQuerySet(models.QuerySet):
                 new_annotations[name] = value
 
         # run the base class's annotate function
-        result = super().annotate(**new_annotations)
+        result = super(self.__class__, self).annotate(**new_annotations)
 
         # rename the annotations back to as specified
         result.rename_annotations(**renames)
@@ -114,7 +114,7 @@ class PostgresQuerySet(models.QuerySet):
         # affected, let's do the same
         return len(rows)
 
-    def on_conflict(self, fields: List[Union[str, Tuple[str]]], action, index_predicate: str=None):
+    def on_conflict(self, fields, action, index_predicate=None):
         """Sets the action to take when conflicts arise when attempting
         to insert/create a new row.
 
@@ -156,7 +156,7 @@ class PostgresQuerySet(models.QuerySet):
             return
 
         # no special action required, use the standard Django bulk_create(..)
-        super().bulk_create([self.model(**fields) for fields in rows])
+        super(self.__class__, self).bulk_create([self.model(**fields) for fields in rows])
 
     def insert(self, **fields):
         """Creates a new record in the database.
@@ -180,7 +180,7 @@ class PostgresQuerySet(models.QuerySet):
             return None
 
         # no special action required, use the standard Django create(..)
-        return super().create(**fields).id
+        return super(self.__class__, self).create(**fields).id
 
     def insert_and_get(self, **fields):
         """Creates a new record in the database and then gets
@@ -199,7 +199,7 @@ class PostgresQuerySet(models.QuerySet):
 
         if not self.conflict_target and not self.conflict_action:
             # no special action required, use the standard Django create(..)
-            return super().create(**fields)
+            return super(self.__class__, self).create(**fields)
 
         compiler = self._build_insert_compiler([fields])
         rows = compiler.execute_sql(return_id=False)
@@ -223,7 +223,7 @@ class PostgresQuerySet(models.QuerySet):
 
         return self.model(**model_init_fields)
 
-    def upsert(self, conflict_target: List, fields: Dict, index_predicate: str=None) -> int:
+    def upsert(self, conflict_target, fields, index_predicate=None):
         """Creates a new record or updates the existing one
         with the specified data.
 
@@ -245,7 +245,7 @@ class PostgresQuerySet(models.QuerySet):
         self.on_conflict(conflict_target, ConflictAction.UPDATE, index_predicate)
         return self.insert(**fields)
 
-    def upsert_and_get(self, conflict_target: List, fields: Dict):
+    def upsert_and_get(self, conflict_target, fields):
         """Creates a new record or updates the existing one
         with the specified data and then gets the row.
 
@@ -264,7 +264,7 @@ class PostgresQuerySet(models.QuerySet):
         self.on_conflict(conflict_target, ConflictAction.UPDATE)
         return self.insert_and_get(**fields)
 
-    def bulk_upsert(self, conflict_target: List, rows: List[Dict]):
+    def bulk_upsert(self, conflict_target, rows):
         """Creates a set of new records or updates the existing
         ones with the specified data.
 
@@ -279,7 +279,7 @@ class PostgresQuerySet(models.QuerySet):
         self.on_conflict(conflict_target, ConflictAction.UPDATE)
         return self.bulk_insert(rows)
 
-    def _build_insert_compiler(self, rows: List[Dict]):
+    def _build_insert_compiler(self, rows):
         """Builds the SQL compiler for a insert query.
 
         Arguments:
@@ -328,7 +328,7 @@ class PostgresQuerySet(models.QuerySet):
 
         return compiler
 
-    def _is_magical_field(self, model_instance, field, is_insert: bool):
+    def _is_magical_field(self, model_instance, field, is_insert):
         """Verifies whether this field is gonna modify something
         on its own.
 
@@ -465,7 +465,7 @@ class PostgresManager(models.Manager):
 
         return PostgresQuerySet(self.model, using=self._db)
 
-    def on_conflict(self, fields: List[Union[str, Tuple[str]]], action):
+    def on_conflict(self, fields, action):
         """Sets the action to take when conflicts arise when attempting
         to insert/create a new row.
 
@@ -478,7 +478,7 @@ class PostgresManager(models.Manager):
         """
         return self.get_queryset().on_conflict(fields, action)
 
-    def upsert(self, conflict_target: List, fields: Dict, index_predicate: str=None) -> int:
+    def upsert(self, conflict_target, fields, index_predicate=None):
         """Creates a new record or updates the existing one
         with the specified data.
 
@@ -498,7 +498,7 @@ class PostgresManager(models.Manager):
 
         return self.get_queryset().upsert(conflict_target, fields, index_predicate)
 
-    def upsert_and_get(self, conflict_target: List, fields: Dict):
+    def upsert_and_get(self, conflict_target, fields):
         """Creates a new record or updates the existing one
         with the specified data and then gets the row.
 
@@ -516,7 +516,7 @@ class PostgresManager(models.Manager):
 
         return self.get_queryset().upsert_and_get(conflict_target, fields)
 
-    def bulk_upsert(self, conflict_target: List, rows: List[Dict]):
+    def bulk_upsert(self, conflict_target, rows):
         """Creates a set of new records or updates the existing
         ones with the specified data.
 

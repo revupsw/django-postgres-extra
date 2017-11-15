@@ -26,7 +26,7 @@ class HStoreColumn(expressions.Col):
                 in the epxression.
         """
 
-        super().__init__(alias, target, output_field=target)
+        super(self.__class__, self).__init__(alias, target, output_field=target)
         self.alias, self.target, self.hstore_key = alias, target, hstore_key
 
     def __repr__(self):
@@ -62,7 +62,7 @@ class HStoreRef(expressions.F):
     Allows selecting individual keys in annotations.
     """
 
-    def __init__(self, name: str, key: str):
+    def __init__(self, name, key):
         """Initializes a new instance of :see:HStoreRef.
 
         Arguments:
@@ -73,13 +73,13 @@ class HStoreRef(expressions.F):
                 The name of the HStore key to select.
         """
 
-        super().__init__(name)
+        super(self.__class__, self).__init__(name)
         self.key = key
 
-    def resolve_expression(self, *args, **kwargs) -> HStoreColumn:
+    def resolve_expression(self, *args, **kwargs):
         """Resolves the expression into a :see:HStoreColumn expression."""
 
-        original_expression = super().resolve_expression(*args, **kwargs)
+        original_expression = super(self.__class__, self).resolve_expression(*args, **kwargs)
         expression = HStoreColumn(
             original_expression.alias,
             original_expression.target,
@@ -104,14 +104,14 @@ class Min(NonGroupableFunc):
     """Exposes PostgreSQL's MIN(..) func."""
 
     def __init__(self, expression):
-        super().__init__(expression, function='MIN')
+        super(self.__class__, self).__init__(expression, function='MIN')
 
 
 class Max(NonGroupableFunc):
     """Exposes PostgreSQL's Max(..) func."""
 
     def __init__(self, expression):
-        super().__init__(expression, function='Max')
+        super(self.__class__, self).__init__(expression, function='Max')
 
 
 class DateTimeEpochColumn(expressions.Col):
@@ -122,7 +122,7 @@ class DateTimeEpochColumn(expressions.Col):
     def as_sql(self, compiler, connection):
         """Compiles this expression into SQL."""
 
-        sql, params = super().as_sql(compiler, connection)
+        sql, params = super(self.__class__, self).as_sql(compiler, connection)
         return 'EXTRACT(epoch FROM {})'.format(sql), params
 
     def get_group_by_cols(self):
@@ -135,7 +135,7 @@ class DateTimeEpoch(expressions.F):
     contains_aggregate = False
 
     def resolve_expression(self, *args, **kwargs):
-        original_expression = super().resolve_expression(*args, **kwargs)
+        original_expression = super(self.__class__, self).resolve_expression(*args, **kwargs)
         expression = DateTimeEpochColumn(
             original_expression.alias,
             original_expression.target,
@@ -143,7 +143,9 @@ class DateTimeEpoch(expressions.F):
         return expression
 
 
-def IsNotNone(*fields, default=None):
+def IsNotNone(*fields, **_3to2kwargs):
+    if 'default' in _3to2kwargs: default = _3to2kwargs['default']; del _3to2kwargs['default']
+    else: default = None
     """Selects whichever field is not None, in the specified order.
 
     Arguments:

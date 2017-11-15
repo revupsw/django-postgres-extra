@@ -12,9 +12,11 @@ class HStoreField(DjangoHStoreField):
           custom database back-end.
     """
 
-    def __init__(self, *args,
-                 uniqueness: List[Union[str, Tuple[str, ...]]]=None,
-                 required: List[str]=None, **kwargs):
+    def __init__(self, *args, **kwargs):
+        if 'required' in kwargs: required = kwargs['required']; del kwargs['required']
+        else: required = None
+        if 'uniqueness' in kwargs: uniqueness = kwargs['uniqueness']; del kwargs['uniqueness']
+        else: uniqueness = None
         """Initializes a new instance of :see:HStoreField."""
 
         super(HStoreField, self).__init__(*args, **kwargs)

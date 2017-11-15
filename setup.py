@@ -1,6 +1,8 @@
+from __future__ import with_statement
 import os
 
 from setuptools import find_packages, setup
+from io import open
 
 with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
     README = readme.read()

@@ -10,11 +10,11 @@ class ConditionalJoin(Join):
     def __init__(self, *args, **kwargs):
         """Initializes a new instance of :see:ConditionalJoin."""
 
-        super().__init__(*args, **kwargs)
+        super(self.__class__, self).__init__(*args, **kwargs)
         self.join_type = 'LEFT OUTER JOIN'
         self.extra_conditions = []
 
-    def add_condition(self, field, value: Any) -> None:
+    def add_condition(self, field, value):
         """Adds an extra condition to this join.
 
         Arguments:
@@ -27,10 +27,10 @@ class ConditionalJoin(Join):
 
         self.extra_conditions.append((field, value))
 
-    def as_sql(self, compiler, connection) -> Tuple[str, List[Any]]:
+    def as_sql(self, compiler, connection):
         """Compiles this JOIN into a SQL string."""
 
-        sql, params = super().as_sql(compiler, connection)
+        sql, params = super(self.__class__, self).as_sql(compiler, connection)
         qn = compiler.quote_name_unless_alias
 
         # generate the extra conditions
@@ -52,7 +52,7 @@ class ConditionalJoin(Join):
         return rewritten_sql, params
 
     @classmethod
-    def from_join(cls, join: Join) -> 'ConditionalJoin':
+    def from_join(cls, join):
         """Creates a new :see:ConditionalJoin from the
         specified :see:Join object.
 

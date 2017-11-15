@@ -19,7 +19,7 @@ class ConflictAction(Enum):
 
 
 class PostgresQuery(sql.Query):
-    def rename_annotations(self, annotations) -> None:
+    def rename_annotations(self, annotations):
         """Renames the aliases for the specified annotations:
 
             .annotate(myfield=F('somestuf__myfield'))
@@ -43,7 +43,7 @@ class PostgresQuery(sql.Query):
             del self.annotations[old_name]
             self.annotations[new_name] = annotation
 
-    def add_join_conditions(self, conditions: Dict[str, Any]) -> None:
+    def add_join_conditions(self, conditions):
         """Adds an extra condition to an existing JOIN.
 
         This allows you to for example do:
@@ -80,7 +80,7 @@ class PostgresQuery(sql.Query):
 
             join.add_condition(field, value)
 
-    def add_fields(self, field_names: List[str], allow_m2m: bool=True) -> bool:
+    def add_fields(self, field_names, allow_m2m=True):
         """
         Adds the given (model) fields to the select set. The field names are
         added in the order specified.
@@ -119,7 +119,7 @@ class PostgresQuery(sql.Query):
             for target in targets:
                 self.add_select(target.get_col(final_alias))
 
-    def _is_hstore_field(self, field_name: str) -> Tuple[bool, Optional[models.Field]]:
+    def _is_hstore_field(self, field_name):
         """Gets whether the field with the specified name is a
         HStoreField.
 
@@ -151,7 +151,7 @@ class PostgresInsertQuery(sql.InsertQuery):
 
         self.update_fields = []
 
-    def values(self, objs: List, insert_fields: List, update_fields: List=[]):
+    def values(self, objs, insert_fields, update_fields=[]):
         """Sets the values to be used in this query.
 
         Insert fields are fields that are definitely

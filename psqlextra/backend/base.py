@@ -1,3 +1,4 @@
+from __future__ import with_statement
 import importlib
 
 from django.conf import settings
@@ -77,7 +78,7 @@ class SchemaEditor(_get_schema_editor_base()):
     def create_model(self, model):
         """Ran when a new model is created."""
 
-        super().create_model(model)
+        super(self.__class__, self).create_model(model)
 
         for mixin in self.post_processing_mixins:
             mixin.create_model(model)
@@ -88,7 +89,7 @@ class SchemaEditor(_get_schema_editor_base()):
         for mixin in self.post_processing_mixins:
             mixin.delete_model(model)
 
-        super().delete_model(model)
+        super(self.__class__, self).delete_model(model)
 
     def alter_db_table(self, model, old_db_table, new_db_table):
         """Ran when the name of a model is changed."""
@@ -148,6 +149,6 @@ class DatabaseWrapper(_get_backend_base()):
         This is where we enable the `hstore` extension
         if it wasn't enabled yet."""
 
-        super().prepare_database()
+        super(self.__class__, self).prepare_database()
         with self.cursor() as cursor:
             cursor.execute('CREATE EXTENSION IF NOT EXISTS hstore')

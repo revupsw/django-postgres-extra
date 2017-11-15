@@ -16,10 +16,10 @@ class ConditionalUniqueIndex(Index):
 
     sql_create_index = "CREATE UNIQUE INDEX %(name)s ON %(table)s (%(columns)s)%(extra)s WHERE %(condition)s"
 
-    def __init__(self, condition: str, fields=[], name=None):
+    def __init__(self, condition, fields=[], name=None):
         """Initializes a new instance of :see:ConditionalUniqueIndex."""
 
-        super().__init__(fields=fields, name=name)
+        super(self.__class__, self).__init__(fields=fields, name=name)
         self.condition = condition
 
     def create_sql(self, model, schema_editor, using=''):

@@ -1,3 +1,4 @@
+from __future__ import with_statement
 from django.core.exceptions import SuspiciousOperation
 from django.db.models.sql.compiler import SQLInsertCompiler, SQLUpdateCompiler
 
@@ -29,7 +30,7 @@ class PostgresInsertCompiler(SQLInsertCompiler):
     def __init__(self, *args, **kwargs):
         """Initializes a new instance of :see:PostgresInsertCompiler."""
 
-        super().__init__(*args, **kwargs)
+        super(self.__class__, self).__init__(*args, **kwargs)
         self.qn = self.connection.ops.quote_name
 
     def as_sql(self, return_id=False):
@@ -37,7 +38,7 @@ class PostgresInsertCompiler(SQLInsertCompiler):
 
         queries = [
             self._rewrite_insert(sql, params, return_id)
-            for sql, params in super().as_sql()
+            for sql, params in super(self.__class__, self).as_sql()
         ]
 
         return queries
@@ -52,10 +53,9 @@ class PostgresInsertCompiler(SQLInsertCompiler):
 
         # create a mapping between column names and column value
         return [
-            {
-                column.name: row[column_index]
-                for column_index, column in enumerate(cursor.description) if row
-            }
+            dict((
+                column.name, row[column_index])
+                for column_index, column in enumerate(cursor.description) if row)
             for row in rows
         ]
 
@@ -209,7 +209,7 @@ class PostgresInsertCompiler(SQLInsertCompiler):
 
         return '(%s)' % ','.join(conflict_target)
 
-    def _get_model_field(self, name: str):
+    def _get_model_field(self, name):
         """Gets the field on a model with the specified name.
 
         Arguments:
@@ -237,7 +237,7 @@ class PostgresInsertCompiler(SQLInsertCompiler):
 
         return None
 
-    def _format_field_name(self, field_name) -> str:
+    def _format_field_name(self, field_name):
         """Formats a field's name for usage in SQL.
 
         Arguments:
@@ -252,7 +252,7 @@ class PostgresInsertCompiler(SQLInsertCompiler):
         field = self._get_model_field(field_name)
         return self.qn(field.column)
 
-    def _format_field_value(self, field_name) -> str:
+    def _format_field_value(self, field_name):
         """Formats a field's value for usage in SQL.
 
         Arguments:
@@ -274,7 +274,7 @@ class PostgresInsertCompiler(SQLInsertCompiler):
             getattr(self.query.objs[0], field_name)
         )
 
-    def _normalize_field_name(self, field_name) -> str:
+    def _normalize_field_name(self, field_name):
         """Normalizes a field name into a string by
         extracting the field name if it was specified
         as a reference to a HStore key (as a tuple).
