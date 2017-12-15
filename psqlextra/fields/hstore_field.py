@@ -1,4 +1,3 @@
-from typing import List, Tuple, Union
 
 from django.contrib.postgres.fields import HStoreField as DjangoHStoreField
 

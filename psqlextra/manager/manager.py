@@ -1,5 +1,4 @@
 from __future__ import with_statement
-from typing import Dict, List, Union, Tuple
 
 import django
 from django.conf import settings

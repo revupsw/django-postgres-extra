@@ -1,4 +1,3 @@
-from typing import List, Tuple, Any
 
 from django.db.models.sql.datastructures import Join
 

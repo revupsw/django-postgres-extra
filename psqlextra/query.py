@@ -1,4 +1,3 @@
-from typing import List, Tuple, Optional, Dict, Any
 from enum import Enum
 
 from django.db import models
