@@ -8,6 +8,6 @@ class PostgresModel(models.Model):
 
     class Meta(object):
         abstract = True
-        base_manager_name = 'objects'
+        _base_manager = 'objects'
 
     objects = PostgresManager()
