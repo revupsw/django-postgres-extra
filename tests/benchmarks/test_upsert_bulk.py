@@ -19,7 +19,7 @@ def test_upsert_bulk_naive(benchmark):
 
     rows = []
     random_values = []
-    for i in range(0, ROW_COUNT):
+    for i in xrange(0, ROW_COUNT):
         random_value = str(uuid.uuid4())
         random_values.append(random_value)
         rows.append(model(field=random_value))
@@ -49,7 +49,7 @@ def test_upsert_bulk_native(benchmark):
 
     rows = []
     random_values = []
-    for i in range(0, ROW_COUNT):
+    for i in xrange(0, ROW_COUNT):
         random_value = str(uuid.uuid4())
         random_values.append(random_value)
         rows.append(model(field=random_value))

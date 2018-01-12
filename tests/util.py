@@ -1,3 +1,4 @@
+from __future__ import with_statement
 import uuid
 
 from django.db import connection, migrations
@@ -30,7 +31,7 @@ def get_fake_model(fields=None, model_base=PostgresModel, meta_options={}):
 
     model = define_fake_model(fields, model_base, meta_options)
 
-    class TestProject:
+    class TestProject(object):
 
         def clone(self, *_args, **_kwargs):
             return self
@@ -52,7 +53,7 @@ def get_fake_model(fields=None, model_base=PostgresModel, meta_options={}):
     return model
 
 
-def db_relation_exists(table_name: str) -> bool:
+def db_relation_exists(table_name):
     """Gets whether a database relation with the specified name exists."""
 
     with connection.cursor() as cursor:

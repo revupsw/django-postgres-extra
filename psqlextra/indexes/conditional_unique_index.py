@@ -26,10 +26,10 @@ class ConditionalUniqueIndex(Index):
         """Creates the actual SQL used when applying the migration."""
 
         sql_create_index = self.sql_create_index
-        sql_parameters = {
-            **Index.get_sql_create_template_values(self, model, schema_editor, using),
-            'condition': self.condition
-        }
+        sql_parameters = dict(
+            condition=self.condition,
+            **Index.get_sql_create_template_values(self, model, schema_editor, using)
+        )
         return sql_create_index % sql_parameters
 
     def deconstruct(self):

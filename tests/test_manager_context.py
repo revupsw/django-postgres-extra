@@ -1,3 +1,4 @@
+from __future__ import with_statement
 from django.db import models
 
 from psqlextra.util import postgres_manager

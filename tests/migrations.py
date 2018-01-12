@@ -1,3 +1,4 @@
+from __future__ import with_statement
 import uuid
 
 from typing import List
@@ -20,7 +21,7 @@ from .util import define_fake_model
 
 
 @contextmanager
-def filtered_schema_editor(*filters: List[str]):
+def filtered_schema_editor(*filters):
     """Gets a schema editor, but filters executed SQL
     statements based on the specified text filters.
 
@@ -73,7 +74,7 @@ def execute_migration(schema_editor, operations, project=None):
 
 
 @contextmanager
-def create_drop_model(field, filters: List[str]):
+def create_drop_model(field, filters):
     """Creates and drops a model with the specified field.
 
     Arguments:
@@ -105,7 +106,7 @@ def create_drop_model(field, filters: List[str]):
 
 
 @contextmanager
-def alter_db_table(field, filters: List[str]):
+def alter_db_table(field, filters):
     """Creates a model with the specified field
     and then renames the database table.
 
@@ -144,7 +145,7 @@ def alter_db_table(field, filters: List[str]):
 
 
 @contextmanager
-def add_field(field, filters: List[str]):
+def add_field(field, filters):
     """Adds the specified field to a model.
 
     Arguments:
@@ -180,7 +181,7 @@ def add_field(field, filters: List[str]):
 
 
 @contextmanager
-def remove_field(field, filters: List[str]):
+def remove_field(field, filters):
     """Removes the specified field from a model.
 
     Arguments:
@@ -217,7 +218,7 @@ def remove_field(field, filters: List[str]):
 
 
 @contextmanager
-def alter_field(old_field, new_field, filters: List[str]):
+def alter_field(old_field, new_field, filters):
     """Alters a field from one state to the other.
 
     Arguments:
@@ -258,7 +259,7 @@ def alter_field(old_field, new_field, filters: List[str]):
 
 
 @contextmanager
-def rename_field(field, filters: List[str]):
+def rename_field(field, filters):
     """Renames a field from one name to the other.
 
     Arguments:
@@ -295,7 +296,7 @@ def rename_field(field, filters: List[str]):
     yield calls
 
 
-class MigrationSimulator:
+class MigrationSimulator(object):
     """Simulates a project and allows making and running
     migrations."""
 
@@ -357,7 +358,7 @@ class MigrationSimulator:
         self.project_state = new_project_state
         return migration
 
-    def migrate(self, *filters: List[str]):
+    def migrate(self, *filters):
         """
         Executes the recorded migrations.
 
